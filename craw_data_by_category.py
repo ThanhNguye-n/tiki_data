@@ -195,7 +195,7 @@ if __name__ == '__main__':
     user_input = input("Enter a category name: ")
     user_input = "-".join(user_input.strip().split())
 
-    with open('category_id.json') as file:
+    with open('data/category_id.json') as file:
         data = json.load(file)
 
     for item in data:
@@ -208,9 +208,9 @@ if __name__ == '__main__':
     if value is not None:
         print('Crawling data is in progress...')
         df_crawled = crawling_data_tiki(CATEGORY_VALUE=value)
-        df_crawled.to_csv(f'{user_input}.csv', index=False)
+        output_file = os.path.join('data', f'{user_input}.csv')
+        df_crawled.to_csv(output_file, index=False)
         print(f'Save file as {user_input}.csv')
     else:
         print('Category name is not found.')
-
 
