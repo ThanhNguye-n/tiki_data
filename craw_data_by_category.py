@@ -6,6 +6,7 @@ from pathlib import Path
 import concurrent.futures
 import time
 import warnings
+import os
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
 
@@ -25,7 +26,7 @@ HEADERS = {
 KEYS = ['id', 'sku', 'name', 'brand_name', 'price', 'discount', 'discount_rate', 'rating_average',
         'review_count', 'order_count', 'favourite_count', 'productset_id', 'seller', 'inventory',
         'stock_item', 'seller_product_id', 'quantity_sold', 'original_price', 'shippable',
-        'availability', 'primary_category_path', 'product_reco_score', 'seller_id']
+        'availability', 'primary_category_path', 'product_reco_score', 'seller_id', 'thumbnail_url']
 
 def get_data(data):
     """
@@ -38,7 +39,7 @@ def get_data(data):
             rows.append(row)
     return pd.DataFrame(rows)
 
-def get_sub_category(cate_value, max_attempts=5, retry_delay=12):
+def get_sub_category(cate_value, max_attempts=5, retry_delay=10):
     """
     Get the sub-categories for a given category value.
 
@@ -159,7 +160,7 @@ def crawling_data_tiki(CATEGORY_VALUE):
     Returns:
         pandas.DataFrame: DataFrame containing the crawled data.
     """
-
+    
     df = get_sub_category(cate_value=CATEGORY_VALUE)
     main_df = pd.DataFrame(columns=KEYS)
 
@@ -187,7 +188,8 @@ def crawling_data_tiki(CATEGORY_VALUE):
             pbar.update(1)
 
     main_df['quantity_sold'] = main_df['quantity_sold'].str.get('value')
-    main_df.drop_duplicates(inplace=True).reset_index(drop=True, inplace=True)
+    main_df = main_df.drop_duplicates()
+    main_df.reset_index(drop=True, inplace=True)
 
     return main_df
 
