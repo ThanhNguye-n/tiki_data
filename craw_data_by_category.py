@@ -38,7 +38,7 @@ def get_data(data):
             rows.append(row)
     return pd.DataFrame(rows)
 
-def get_sub_category(cate_value, max_attempts=5, retry_delay=10):
+def get_sub_category(cate_value, max_attempts=5, retry_delay=12):
     """
     Get the sub-categories for a given category value.
 
@@ -69,7 +69,7 @@ def get_sub_category(cate_value, max_attempts=5, retry_delay=10):
                 print(f"Max retry attempts reached ({max_attempts}).")
     return pd.DataFrame()
 
-def request_func(params, max_attempts=3, retry_delay=10):
+def request_func(params, max_attempts=3, retry_delay=5):
     """
     Perform a GET request to the Tiki API and retrieve data based on the provided parameters.
 
@@ -92,10 +92,11 @@ def request_func(params, max_attempts=3, retry_delay=10):
             return get_data(data=data)
         except:
             attempts += 1
+            retry_delay += 5
             if attempts < max_attempts:
                 time.sleep(retry_delay)
             else:
-                print(f"WARNING: Max retry attempts reached ({max_attempts}).")
+                print(f"WARNING: Max retry attempts in REQUESTING API reached ({max_attempts}).")
     return pd.DataFrame()
 
 
