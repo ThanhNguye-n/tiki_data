@@ -154,7 +154,7 @@ def crawling_data_tiki(CATEGORY_VALUE):
     Perform the crawling of data from Tiki for a specific category.
 
     Args:
-        CATEGORY_VALUE (str): Category value for which data is to be crawled.
+        CATEGORY_VALUE (int): Category value for which data is to be crawled.
 
     Returns:
         pandas.DataFrame: DataFrame containing the crawled data.
@@ -187,7 +187,7 @@ def crawling_data_tiki(CATEGORY_VALUE):
             pbar.update(1)
 
     main_df['quantity_sold'] = main_df['quantity_sold'].str.get('value')
-    main_df.drop_duplicates().reset_index(drop=True, inplace=True)
+    main_df.drop_duplicates(inplace=True).reset_index(drop=True, inplace=True)
 
     return main_df
 
