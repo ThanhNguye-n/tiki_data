@@ -1,8 +1,6 @@
 import requests
 import json
 import pandas as pd
-import glob
-from pathlib import Path
 import concurrent.futures
 import time
 import warnings
