@@ -3,11 +3,13 @@ from bs4 import BeautifulSoup
 from PIL import Image
 from io import BytesIO
 from torchvision import models, transforms
+from torch import nn
 import torch
 import pandas as pd
 import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def get_url_image(url):
 
@@ -53,14 +55,19 @@ if __name__ == '__main__':
 
     # Initialize the weights
     weights = models.ResNet34_Weights.DEFAULT
-    model = torch.jit.load('models/model_ResNet34_25epochs.pt')
+    checkpoint = torch.jit.load('models/model_ResNet34_25epochs.pt', map_location=torch.device(device))
+    state_dict = checkpoint.state_dict()
+    model = models.resnet34(weights=weights).to(device)
+    model.fc = nn.Linear(512, 23).to(device)
+    
+    model.load_state_dict(state_dict)
     model.eval()
 
     # Initialize the inference transforms
     preprocess = weights.transforms()
 
     batch = preprocess(img).unsqueeze(0)
-    batch = batch.to('cuda')
+    batch = batch.to(device)
 
     # Predict
     with torch.no_grad():
@@ -71,7 +78,7 @@ if __name__ == '__main__':
 
 
     # Recommend product same labels
-    df = pd.read_csv('data/full_data_dien_thoai_may_tinh_bang')
+    df = pd.read_csv('data/full_data_dien_thoai_may_tinh_bang.csv')
     index = df[df.label==label_name].index
     list_products = np.random.choice(index, 3, replace=False)
 
